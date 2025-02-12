@@ -62,7 +62,10 @@ Goal : 매장을 방문할때 미리 방문 예약을 진행하는 기능을 구
   - 정책 : 사용자 아이디가 이미 존재하는 경우 실패 응답,
   - 성공 응답 정보 : email, password, name, phone
 
-매장 수정
+매장 수정 PUT /store/update/{storeId})
+- 파라미터 :managerName,restaurantName,restaurantAddress,restaurantDetail,lat ,lnt
+- 정책 : 동일한 restaurantName이 이미 존재하는 경우 실패 응답
+- 성공 응답 정보 : 성공 응답 정보: storeId, managerName, restaurantName, restaurantAddress, restaurantDetail, lat, lnt, createdAt, modifiedAt,
 
 
 
