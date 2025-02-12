@@ -29,6 +29,8 @@ class StoreServiceTest {
     @PersistenceContext
     private EntityManager entityManager;
 
+
+
     @BeforeEach
     void setUp() {
         storeRepository.deleteAll(); // 테스트 시작 전 DB 초기화
@@ -95,5 +97,27 @@ class StoreServiceTest {
         });
 
         assertThat(exception.getMessage()).isEqualTo("이미 존재하는 가게 이름입니다.");
+    }
+
+    @Test
+    @DisplayName("매장 수정 성공 - JPA 저장 확인")
+    void updateStore_Success() {
+        // Given: 기존 매장 등록
+        StoreRegister.Request request = new StoreRegister.Request(
+                "manager@example.com", "테스트 매장", "서울시 강남구", "강남역 근처",
+                37.4979, 127.0276
+        );
+        StoreRegister.Response savedStore = storeService.registerStore(request);
+
+        // When: 매장 정보 수정
+        StoreRegister.Request updateRequest = new StoreRegister.Request(
+                "manager@example.com", "수정된 매장", "서울시 서초구", "서초역 근처",
+                37.4912, 127.0092
+        );
+        StoreRegister.Response updatedStore = storeService.updateStore(savedStore.getStoreId(), updateRequest);
+
+        // Then: 데이터 검증
+        assertThat(updatedStore.getRestaurantName()).isEqualTo("수정된 매장");
+        assertThat(updatedStore.getRestaurantAddress()).isEqualTo("서울시 서초구");
     }
 }
