@@ -27,4 +27,10 @@ public class StoreController {
             @RequestBody StoreRegister.Request request) {
         return ResponseEntity.ok(storeService.updateStore(storeId, request));
     }
+    // 매장 삭제 API
+    @DeleteMapping("/delete/{storeId}")
+    public ResponseEntity<String> deleteStore(@PathVariable Integer storeId) {
+        storeService.deleteStore(storeId);
+        return ResponseEntity.ok("매장이 성공적으로 삭제되었습니다.");
+    }
 }

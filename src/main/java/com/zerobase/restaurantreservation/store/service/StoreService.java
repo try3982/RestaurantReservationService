@@ -56,5 +56,15 @@ public class StoreService {
         return StoreRegister.Response.fromEntity(storeEntity);
     }
 
+    // 매장 삭제 기능
+    public void deleteStore(Integer storeId) {
+        // 1. 매장 존재 여부 확인
+        StoreEntity storeEntity = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매장이 존재하지 않습니다."));
+
+        // 2. 매장 삭제
+        storeRepository.delete(storeEntity);
+    }
+
 
 }
