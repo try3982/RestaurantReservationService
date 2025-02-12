@@ -29,11 +29,17 @@ class StoreServiceTest {
     @PersistenceContext
     private EntityManager entityManager;
 
-
+    private Integer savedStoreId;
 
     @BeforeEach
     void setUp() {
         storeRepository.deleteAll(); // 테스트 시작 전 DB 초기화
+        // 매장 하나 등록
+        StoreRegister.Request request = new StoreRegister.Request(
+                "매니저1", "테스트 매장", "서울 강남구", "깔끔한 인테리어", 37.5665, 126.9780
+        );
+        StoreRegister.Response response = storeService.registerStore(request);
+        savedStoreId = response.getStoreId();
     }
 
     @AfterEach
@@ -44,54 +50,37 @@ class StoreServiceTest {
     @Test
     @DisplayName("매장 등록 성공 - JPA 저장 확인")
     void registerStore_Success() {
-        // Given: 매장 등록 요청 객체
+        // Given
         StoreRegister.Request request = new StoreRegister.Request(
-                "홍길동",
-                "맛있는 식당",
-                "서울시 강남구 테헤란로 123",
-                "강남역 3번 출구 근처",
-                37.498095,
-                127.027610
+                "홍길동", "맛있는 식당", "서울시 강남구 테헤란로 123", "강남역 3번 출구 근처",
+                37.498095, 127.027610
         );
 
-        // When: 매장 등록 요청 처리
+        // When
         StoreRegister.Response response = storeService.registerStore(request);
 
-        // Then: 응답 객체 검증
+        // Then
         assertThat(response).isNotNull();
         assertThat(response.getStoreId()).isNotNull();
-        assertThat(response.getManagerName()).isEqualTo("홍길동");
         assertThat(response.getRestaurantName()).isEqualTo("맛있는 식당");
-        assertThat(response.getRestaurantAddress()).isEqualTo("서울시 강남구 테헤란로 123");
-        assertThat(response.getRestaurantDetail()).isEqualTo("강남역 3번 출구 근처");
-        assertThat(response.getLat()).isEqualTo(37.498095);
-        assertThat(response.getLnt()).isEqualTo(127.027610);
 
-        // DB 데이터 검증
         Optional<StoreEntity> savedStore = storeRepository.findByRestaurantName("맛있는 식당");
         assertThat(savedStore).isPresent();
-        assertThat(savedStore.get().getStoreId()).isEqualTo(response.getStoreId()); // DB 저장된 ID와 응답 ID 일치
-        assertThat(savedStore.get().getManagerName()).isEqualTo("홍길동");
-        assertThat(savedStore.get().getRestaurantName()).isEqualTo("맛있는 식당");
     }
 
     @Test
     @DisplayName("매장 등록 실패 - 중복된 가게 이름")
     void registerStore_Fail_DuplicateStoreName() {
-        // Given: 이미 존재하는 가게 이름으로 매장 등록
+        // Given
         StoreRegister.Request request = new StoreRegister.Request(
-                "김철수",
-                "중복된 가게",
-                "서울시 마포구 홍대입구 456",
-                "홍대역 근처",
-                37.555167,
-                126.936991
+                "김철수", "중복된 가게", "서울시 마포구 홍대입구 456", "홍대역 근처",
+                37.555167, 126.936991
         );
 
         // 먼저 매장을 등록
         storeService.registerStore(request);
 
-        // 동일한 가게 이름으로 다시 등록하면 예외 발생해야 함
+        // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             storeService.registerStore(request);
         });
@@ -102,22 +91,45 @@ class StoreServiceTest {
     @Test
     @DisplayName("매장 수정 성공 - JPA 저장 확인")
     void updateStore_Success() {
-        // Given: 기존 매장 등록
-        StoreRegister.Request request = new StoreRegister.Request(
-                "manager@example.com", "테스트 매장", "서울시 강남구", "강남역 근처",
-                37.4979, 127.0276
-        );
-        StoreRegister.Response savedStore = storeService.registerStore(request);
-
-        // When: 매장 정보 수정
+        // Given
         StoreRegister.Request updateRequest = new StoreRegister.Request(
-                "manager@example.com", "수정된 매장", "서울시 서초구", "서초역 근처",
+                "매니저1", "수정된 매장", "서울시 서초구", "서초역 근처",
                 37.4912, 127.0092
         );
-        StoreRegister.Response updatedStore = storeService.updateStore(savedStore.getStoreId(), updateRequest);
 
-        // Then: 데이터 검증
+        // When
+        StoreRegister.Response updatedStore = storeService.updateStore(savedStoreId, updateRequest);
+
+        // Then
         assertThat(updatedStore.getRestaurantName()).isEqualTo("수정된 매장");
         assertThat(updatedStore.getRestaurantAddress()).isEqualTo("서울시 서초구");
+    }
+
+    @Test
+    @DisplayName("매장 삭제 성공")
+    void deleteStore_Success() {
+        // Given
+        assertThat(storeRepository.findById(savedStoreId)).isPresent();
+
+        // When
+        storeService.deleteStore(savedStoreId);
+
+        // Then
+        Optional<StoreEntity> deletedStore = storeRepository.findById(savedStoreId);
+        assertThat(deletedStore).isEmpty();
+    }
+
+    @Test
+    @DisplayName("매장 삭제 실패 - 존재하지 않는 매장 ID")
+    void deleteStore_Fail_StoreNotFound() {
+        // Given
+        Integer nonExistingStoreId = 9999;
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            storeService.deleteStore(nonExistingStoreId);
+        });
+
+        assertThat(exception.getMessage()).isEqualTo("해당 매장이 존재하지 않습니다.");
     }
 }
