@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-public class PartnerRegiter {
+public class PartnerRegister {
 
 
     @Getter
@@ -41,7 +41,7 @@ public class PartnerRegiter {
         private String phone;
         private LocalDateTime createdAt;
 
-        public static PartnerRegiter.Response fromEntity(PartnerEntity entity) {
+        public static PartnerRegister.Response fromEntity(PartnerEntity entity) {
             return Response.builder()
                     .partnerId(entity.getPartnerId())
                     .partnerEmail(entity.getEmail())
