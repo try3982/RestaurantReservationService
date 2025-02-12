@@ -44,10 +44,20 @@ Goal : 매장을 방문할때 미리 방문 예약을 진행하는 기능을 구
 
 ### api 명세서
 
+##### 매장이용자
 1. 회원가입(POST, "/signup/regtister")
   - 파라미터 : email, password, name, phone
   - 정책 : 사용자 아이디가 이미 존재하는 경우 실패 응답,
   - 성공 응답 정보 : email, password, name, phone
+
+##### 매장 관리자
+회원가입(POST, "/signup/partnerRegister")
+  - 파라미터 : email, password, name, phone
+  - 정책 : 사용자 아이디가 이미 존재하는 경우 실패 응답,
+  - 성공 응답 정보 : email, password, name, phone
+
+##### 매장등록
+
 
 
  
