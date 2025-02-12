@@ -11,6 +11,7 @@ public class StoreRegister {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class Request {
         private String managerName;
         private String restaurantName;

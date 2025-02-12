@@ -19,4 +19,12 @@ public class StoreController {
     public ResponseEntity<StoreRegister.Response> registerStore(@RequestBody StoreRegister.Request request) {
         return ResponseEntity.ok(storeService.registerStore(request));
     }
+
+    // 매장 수정 API
+    @PutMapping("/update/{storeId}")
+    public ResponseEntity<StoreRegister.Response> updateStore(
+            @PathVariable int storeId,
+            @RequestBody StoreRegister.Request request) {
+        return ResponseEntity.ok(storeService.updateStore(storeId, request));
+    }
 }
