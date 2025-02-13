@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -64,6 +66,21 @@ public class StoreService {
 
         // 2. 매장 삭제
         storeRepository.delete(storeEntity);
+    }
+
+    // 매장 검색
+    public List<StoreRegister.Response> searchStores(String keyword) {
+        List<StoreEntity> stores = storeRepository.findByRestaurantNameContainingOrRestaurantAddressContaining(keyword, keyword);
+        return stores.stream()
+                .map(StoreRegister.Response::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    // 매장 상새정보 조회
+    public StoreRegister.Response getStoreDetail(Integer storeId) {
+        StoreEntity storeEntity = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매장이 존재하지 않습니다."));
+        return StoreRegister.Response.fromEntity(storeEntity);
     }
 
 

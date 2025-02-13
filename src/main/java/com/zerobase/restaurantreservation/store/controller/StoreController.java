@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -32,5 +34,15 @@ public class StoreController {
     public ResponseEntity<String> deleteStore(@PathVariable Integer storeId) {
         storeService.deleteStore(storeId);
         return ResponseEntity.ok("매장이 성공적으로 삭제되었습니다.");
+    }
+    //매장 검색 API
+    @GetMapping("/search")
+    public ResponseEntity<List<StoreRegister.Response>> searchStores(@RequestParam String keyword) {
+        return ResponseEntity.ok(storeService.searchStores(keyword));
+    }
+    // 매장 상세정보  API
+    @GetMapping("/detail/{storeId}")
+    public ResponseEntity<StoreRegister.Response> getStoreDetail(@PathVariable Integer storeId) {
+        return ResponseEntity.ok(storeService.getStoreDetail(storeId));
     }
 }
