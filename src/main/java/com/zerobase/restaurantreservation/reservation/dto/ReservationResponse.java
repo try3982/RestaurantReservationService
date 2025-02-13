@@ -12,16 +12,16 @@ import java.time.LocalDateTime;
 @Builder
 public class ReservationResponse {
     private Integer reservationId;
+    private Integer customerId;
     private Integer storeId;
-    private String storeName;
     private LocalDateTime reservationTime;
     private LocalDateTime createdAt;
 
     public static ReservationResponse fromEntity(ReservationEntity entity) {
         return ReservationResponse.builder()
                 .reservationId(entity.getReservationId())
+                .customerId(entity.getCustomer().getUserId())
                 .storeId(entity.getStore().getStoreId())
-                .storeName(entity.getStore().getRestaurantName())
                 .reservationTime(entity.getReservationTime())
                 .createdAt(entity.getCreatedAt())
                 .build();

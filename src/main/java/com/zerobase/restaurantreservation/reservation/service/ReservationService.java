@@ -7,7 +7,7 @@ import com.zerobase.restaurantreservation.reservation.repository.ReservationRepo
 import com.zerobase.restaurantreservation.store.entity.StoreEntity;
 import com.zerobase.restaurantreservation.store.repository.StoreRepository;
 import com.zerobase.restaurantreservation.user.entity.UserEntity;
-import com.zerobase.restaurantreservation.user.repository.UserRepositrory;
+import com.zerobase.restaurantreservation.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,22 +22,28 @@ import java.util.stream.Collectors;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final UserRepositrory userRepository;
+    private final UserRepository userRepository;
     private final StoreRepository storeRepository;
 
     // 예약 생성
-    public ReservationResponse createReservation(Integer userId, ReservationRequest request) {
-        // 사용자 확인
-        UserEntity user = userRepository.findById(userId)
+    public ReservationResponse createReservation(Integer customerId, ReservationRequest request) {
+        UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // 매장 확인
         StoreEntity store = storeRepository.findById(request.getStoreId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 매장입니다."));
 
-        // 예약 생성
+        if (request.getReservationTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("과거 시간으로 예약할 수 없습니다.");
+        }
+
+        boolean isDuplicate = reservationRepository.existsByStoreAndReservationTime(store, request.getReservationTime());
+        if (isDuplicate) {
+            throw new IllegalArgumentException("이미 해당 시간에 예약이 존재합니다.");
+        }
+
         ReservationEntity reservation = ReservationEntity.builder()
-                .user(user)
+                .customer(customer)
                 .store(store)
                 .reservationTime(request.getReservationTime())
                 .createdAt(LocalDateTime.now())
@@ -48,11 +54,11 @@ public class ReservationService {
     }
 
     // 사용자의 예약 목록 조회
-    public List<ReservationResponse> getUserReservations(Integer userId) {
-        UserEntity user = userRepository.findById(userId)
+    public List<ReservationResponse> getCustomerReservations(Integer customerId) {
+        UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        return reservationRepository.findByUser(user).stream()
+        return reservationRepository.findByCustomer(customer).stream()
                 .map(ReservationResponse::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -66,10 +72,11 @@ public class ReservationService {
     }
 
     // 예약 취소
-    public void cancelReservation(Integer reservationId) {
+    public ReservationResponse cancelReservation(Integer reservationId) {
         ReservationEntity reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
 
         reservationRepository.delete(reservation);
+        return ReservationResponse.fromEntity(reservation);
     }
 }

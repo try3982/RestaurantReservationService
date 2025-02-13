@@ -21,8 +21,8 @@ public class ReservationEntity {
     private Integer reservationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user; // 예약한 사용자
+    @JoinColumn(name = "customer_id", nullable = false)
+    private UserEntity customer; // 예약한 사용자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
