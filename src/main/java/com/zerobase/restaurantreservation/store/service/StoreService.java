@@ -76,11 +76,26 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
 
-    // 매장 상새정보 조회
+    // 매장 상세정보 조회
     public StoreRegister.Response getStoreDetail(Integer storeId) {
         StoreEntity storeEntity = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 매장이 존재하지 않습니다."));
         return StoreRegister.Response.fromEntity(storeEntity);
+    }
+
+    // 가나다수누 정렬
+    public List<StoreEntity> getStoresSortedByName() {
+        return storeRepository.findAllByOrderByRestaurantNameAsc();
+    }
+
+    // 별점순 정렬
+    public List<StoreEntity> getStoresSortedByRating() {
+        return storeRepository.findAllByOrderByRatingDesc();
+    }
+
+    // 거리 순 정렬(현재 위치 기준)
+    public List<StoreEntity> getStoresSortedByDistance(double lat, double lnt) {
+        return storeRepository.findAllByDistance(lat, lnt);
     }
 
 

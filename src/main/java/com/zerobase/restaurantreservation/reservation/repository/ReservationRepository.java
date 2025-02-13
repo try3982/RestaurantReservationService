@@ -13,4 +13,8 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
 
     //  특정 시간에 동일 매장에 예약이 있는지 확인하는 메서등빈다
     boolean existsByStoreAndReservationTime(StoreEntity store, LocalDateTime reservationTime);
+
+    // 예약 정보 확인
+    boolean existsByCustomerAndReservationTime(UserEntity customer, LocalDateTime reservationTime);
+
 }

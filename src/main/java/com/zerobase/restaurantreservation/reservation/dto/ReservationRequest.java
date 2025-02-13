@@ -14,5 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReservationRequest {
     private Integer storeId;
+    private String phoneNumber;
     private LocalDateTime reservationTime;
 }
