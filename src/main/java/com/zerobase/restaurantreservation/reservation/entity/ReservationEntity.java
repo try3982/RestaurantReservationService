@@ -1,0 +1,41 @@
+package com.zerobase.restaurantreservation.reservation.entity;
+
+import com.zerobase.restaurantreservation.store.entity.StoreEntity;
+import com.zerobase.restaurantreservation.user.entity.UserEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "reservations")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ReservationEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer reservationId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user; // 예약한 사용자
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private StoreEntity store; // 예약한 매장
+
+    @Column(nullable = false)
+    private LocalDateTime reservationTime; // 예약 시간
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt; // 예약 생성 시간
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+}
