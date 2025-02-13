@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +35,7 @@ class StoreServiceTest {
     @BeforeEach
     void setUp() {
         storeRepository.deleteAll(); // 테스트 시작 전 DB 초기화
+
         // 매장 하나 등록
         StoreRegister.Request request = new StoreRegister.Request(
                 "매니저1", "테스트 매장", "서울 강남구", "깔끔한 인테리어", 37.5665, 126.9780
@@ -128,6 +130,61 @@ class StoreServiceTest {
         // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             storeService.deleteStore(nonExistingStoreId);
+        });
+
+        assertThat(exception.getMessage()).isEqualTo("해당 매장이 존재하지 않습니다.");
+    }
+
+
+    @Test
+    @DisplayName("매장 검색 성공")
+    void searchStores_Success() {
+        // Given
+        String keyword = "테스트";
+
+        // When
+        List<StoreRegister.Response> searchResults = storeService.searchStores(keyword);
+
+        // Then
+        assertThat(searchResults).isNotEmpty();
+        assertThat(searchResults.get(0).getRestaurantName()).contains("테스트");
+    }
+
+    @Test
+    @DisplayName("매장 검색 실패 - 결과 없음")
+    void searchStores_Fail_NoResults() {
+        // Given
+        String keyword = "없는매장";
+
+        // When
+        List<StoreRegister.Response> searchResults = storeService.searchStores(keyword);
+
+        // Then
+        assertThat(searchResults).isEmpty();
+    }
+
+    @Test
+    @DisplayName("매장 상세정보 조회 성공")
+    void getStoreDetail_Success() {
+        // When
+        StoreRegister.Response storeDetail = storeService.getStoreDetail(savedStoreId);
+
+        // Then
+        assertThat(storeDetail).isNotNull();
+        assertThat(storeDetail.getStoreId()).isEqualTo(savedStoreId);
+        assertThat(storeDetail.getRestaurantName()).isEqualTo("테스트 매장");
+        assertThat(storeDetail.getRestaurantAddress()).isEqualTo("서울 강남구");
+    }
+
+    @Test
+    @DisplayName("매장 상세정보 조회 실패 - 존재하지 않는 매장 ID")
+    void getStoreDetail_Fail_StoreNotFound() {
+        // Given
+        Integer nonExistingStoreId = 9999;
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            storeService.getStoreDetail(nonExistingStoreId);
         });
 
         assertThat(exception.getMessage()).isEqualTo("해당 매장이 존재하지 않습니다.");
