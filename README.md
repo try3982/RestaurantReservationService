@@ -43,39 +43,116 @@ Goal : 매장을 방문할때 미리 방문 예약을 진행하는 기능을 구
 
 
 ### api 명세서
+---
 
-##### 매장이용자
-1. 회원가입(POST, "/signup/regtister")
-  - 파라미터 : email, password, name, phone
-  - 정책 : 사용자 아이디가 이미 존재하는 경우 실패 응답,
-  - 성공 응답 정보 : email, password, name, phone
+##  매장 이용자 (고객)
 
-##### 매장 관리자
-회원가입(POST, "/signup/partnerRegister")
-  - 파라미터 : email, password, name, phone
-  - 정책 : 사용자 아이디가 이미 존재하는 경우 실패 응답,
-  - 성공 응답 정보 : email, password, name, phone
+### 1️⃣ 회원가입 (POST `/signup/register`)
+- **파라미터**  
+  - `email` (이메일)  
+  - `password` (비밀번호)  
+  - `name` (이름)  
+  - `phone` (전화번호)  
+- **정책**  
+  - 이메일이 이미 존재하는 경우 실패 응답  
+- **성공 응답 정보**  
+  - `email`, `name`, `phone`, `createdAt`  
 
-##### 매장
-매장 등록(Post, "/store/register")
- - 파라미터 : email, password, name, phone
-  - 정책 : 사용자 아이디가 이미 존재하는 경우 실패 응답,
-  - 성공 응답 정보 : email, password, name, phone
+### 2️⃣ 로그인 (POST `/login`)
+- **파라미터**  
+  - `email` (이메일)  
+  - `password` (비밀번호)  
+- **정책**  
+  - 이메일이 존재하지 않거나 비밀번호가 틀린 경우 실패 응답  
+- **성공 응답 정보**  
+  - `token`, `userId`  
 
-매장 수정 (PUT /store/update/{storeId})
-- 파라미터 :managerName,restaurantName,restaurantAddress,restaurantDetail,lat ,lnt
-- 정책 : 동일한 restaurantName이 이미 존재하는 경우 실패 응답
-- 성공 응답 정보 : 성공 응답 정보: storeId, managerName, restaurantName, restaurantAddress, restaurantDetail, lat, lnt, createdAt, modifiedAt,
+### 3️⃣ 예약 생성 (POST `/reservation/create`)
+- **파라미터**  
+  - `phoneNumber` (전화번호)  
+  - `storeId` (매장 ID)  
+  - `reservationTime` (예약 시간)  
+- **정책**  
+  - 존재하지 않는 사용자 또는 매장일 경우 실패 응답  
+  - 과거 시간 예약 불가  
+  - 동일한 시간에 중복 예약 불가  
+- **성공 응답 정보**  
+  - `reservationId`, `customerId`, `storeId`, `reservationTime`, `createdAt`  
 
-매장 삭제 Delete(store/delete/{storeId})  
+### 4️⃣ 고객의 예약 목록 조회 (GET `/reservation/list/{customerId}`)
+- **파라미터**  
+  - `customerId` (고객 ID)  
+- **정책**  
+  - 존재하지 않는 사용자일 경우 실패 응답  
+- **성공 응답 정보**  
+  - `reservationId`, `storeId`, `reservationTime`, `status`  
 
+### 5️⃣ 예약 취소 (DELETE `/reservation/cancel/{reservationId}`)
+- **파라미터**  
+  - `reservationId` (예약 ID)  
+- **정책**  
+  - 존재하지 않는 예약일 경우 실패 응답  
+- **성공 응답 정보**  
+  - `message`  
 
-매장 검색 (GET /store/search)
+---
 
+##  매장 관리자
 
-매장 상세정보 조회(GET /detail/{storeId})
+### 1️⃣ 회원가입 (POST `/signup/partnerRegister`)
+- **파라미터**  
+  - `email`, `password`, `name`, `phone`  
+- **정책**  
+  - 이메일이 이미 존재하는 경우 실패 응답  
+- **성공 응답 정보**  
+  - `email`, `name`, `phone`, `createdAt`  
 
+---
 
+##  매장
+
+### 1️⃣ 매장 등록 (POST `/store/register`)
+- **파라미터**  
+  - `managerName`, `restaurantName`, `restaurantAddress`, `restaurantDetail`, `lat`, `lnt`  
+- **정책**  
+  - 동일한 `restaurantName`이 이미 존재하는 경우 실패 응답  
+- **성공 응답 정보**  
+  - `storeId`, `managerName`, `restaurantName`, `restaurantAddress`, `restaurantDetail`, `lat`, `lnt`, `createdAt`  
+
+### 2️⃣ 매장 수정 (PUT `/store/update/{storeId}`)
+- **파라미터**  
+  - `managerName`, `restaurantName`, `restaurantAddress`, `restaurantDetail`, `lat`, `lnt`  
+- **정책**  
+  - 동일한 `restaurantName`이 이미 존재하는 경우 실패 응답  
+- **성공 응답 정보**  
+  - `storeId`, `managerName`, `restaurantName`, `restaurantAddress`, `restaurantDetail`, `lat`, `lnt`, `modifiedAt`  
+
+### 3️⃣ 매장 삭제 (DELETE `/store/delete/{storeId}`)
+- **파라미터**  
+  - `storeId` (매장 ID)  
+- **정책**  
+  - 존재하지 않는 매장일 경우 실패 응답  
+- **성공 응답 정보**  
+  - `message`  
+
+### 4️⃣ 매장 검색 (GET `/store/search`)
+- **파라미터**  
+  - `query` (검색 키워드)  
+- **성공 응답 정보**  
+  - `storeId`, `restaurantName`, `restaurantAddress`, `rating`  
+
+---
+
+##  방문 확인 (키오스크)
+
+### 1️⃣ 방문 확인 (PUT `/kiosk/confirm/{reservationId}`)
+- **파라미터**  
+  - `reservationId` (예약 ID)  
+- **정책**  
+  - 존재하지 않는 예약일 경우 실패 응답  
+  - 이미 방문 확인이 된 경우 실패 응답  
+- **성공 응답 정보**  
+  - `reservationId`, `status`, `visitedAt`  
 
 
  
