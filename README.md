@@ -36,7 +36,7 @@ Goal : 매장을 방문할때 미리 방문 예약을 진행하는 기능을 구
 
 ### 매장 이용자
 - [x] 회원가입
-- [ ] 매장 검색 & 상세정보(매장명, 상점위치, 상점 설명)
+- [x] 매장 검색 & 상세정보(매장명, 상점위치, 상점 설명)
 - [ ] 예약(회원가입 필수)
 - [ ] 키오스크를 통해 방문 확인
 - [ ] 리뷰 작성(리뷰 수정은 작성자만, 삭제는 매장관리자와  작성자)
@@ -68,6 +68,12 @@ Goal : 매장을 방문할때 미리 방문 예약을 진행하는 기능을 구
 - 성공 응답 정보 : 성공 응답 정보: storeId, managerName, restaurantName, restaurantAddress, restaurantDetail, lat, lnt, createdAt, modifiedAt,
 
 매장 삭제 Delete(store/delete/{storeId})  
+
+
+매장 검색 (GET /store/search)
+
+
+매장 상세정보 조회(GET /detail/{storeId})
 
 
 
