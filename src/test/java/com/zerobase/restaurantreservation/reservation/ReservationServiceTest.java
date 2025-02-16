@@ -48,9 +48,7 @@ class ReservationServiceTest {
         userRepository.deleteAll();
         storeRepository.deleteAll();
 
-        System.out.println("🛠 모든 데이터 삭제 완료 → 예약 수: " + reservationRepository.count());
-        System.out.println("🛠 모든 데이터 삭제 완료 → 사용자 수: " + userRepository.count());
-        System.out.println("🛠 모든 데이터 삭제 완료 → 매장 수: " + storeRepository.count());
+
 
         // 중복 방지를 위해 동적으로 이메일 생성
         String uniqueEmail = "test" + System.currentTimeMillis() + "@example.com";

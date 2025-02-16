@@ -14,7 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class PartnerController {
     private final PartnerService partnerService;
 
-    // 파트너 회원가입 API
+    /**
+     * 파트너 회원가입 API
+     * - 요청된 파트너 정보를 받아 회원가입 처리
+     * - 성공 시 파트너 등록된 정보 반환
+     */
     @PostMapping("/partnerRegister")
     public ResponseEntity<PartnerRegister.Response> registerPartner(@RequestBody PartnerRegister.Request request) {
         return ResponseEntity.ok(partnerService.registerPartner(request));

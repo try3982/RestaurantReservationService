@@ -15,6 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class PartnerService {
     private  final PartnerRepository partnerRepository;
 
+    /**
+     * 파트너 회원가입 처리
+     * - 이메일 중복 여부 확인 후 가입 진행
+     * - 중복 이메일 존재 시 예외 발생
+     * - 가입 성공 시 저장된 파트너 정보 반환
+     */
     public PartnerRegister.Response registerPartner(PartnerRegister.Request request) {
         // 이메일 중복 체크
         if (partnerRepository.findByEmail(request.getPartnerEmail()).isPresent()) {
