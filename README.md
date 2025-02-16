@@ -42,117 +42,185 @@ Goal : 매장을 방문할때 미리 방문 예약을 진행하는 기능을 구
 - [] 리뷰 작성(리뷰 수정은 작성자만, 삭제는 매장관리자와  작성자)
 
 
-### api 명세서
----
-
-##  매장 이용자 (고객)
-
-### 1️⃣ 회원가입 (POST `/signup/register`)
-- **파라미터**  
-  - `email` (이메일)  
-  - `password` (비밀번호)  
-  - `name` (이름)  
-  - `phone` (전화번호)  
-- **정책**  
-  - 이메일이 이미 존재하는 경우 실패 응답  
-- **성공 응답 정보**  
-  - `email`, `name`, `phone`, `createdAt`  
-
-### 2️⃣ 로그인 (POST `/login`)
-- **파라미터**  
-  - `email` (이메일)  
-  - `password` (비밀번호)  
-- **정책**  
-  - 이메일이 존재하지 않거나 비밀번호가 틀린 경우 실패 응답  
-- **성공 응답 정보**  
-  - `token`, `userId`  
-
-### 3️⃣ 예약 생성 (POST `/reservation/create`)
-- **파라미터**  
-  - `phoneNumber` (전화번호)  
-  - `storeId` (매장 ID)  
-  - `reservationTime` (예약 시간)  
-- **정책**  
-  - 존재하지 않는 사용자 또는 매장일 경우 실패 응답  
-  - 과거 시간 예약 불가  
-  - 동일한 시간에 중복 예약 불가  
-- **성공 응답 정보**  
-  - `reservationId`, `customerId`, `storeId`, `reservationTime`, `createdAt`  
-
-### 4️⃣ 고객의 예약 목록 조회 (GET `/reservation/list/{customerId}`)
-- **파라미터**  
-  - `customerId` (고객 ID)  
-- **정책**  
-  - 존재하지 않는 사용자일 경우 실패 응답  
-- **성공 응답 정보**  
-  - `reservationId`, `storeId`, `reservationTime`, `status`  
-
-### 5️⃣ 예약 취소 (DELETE `/reservation/cancel/{reservationId}`)
-- **파라미터**  
-  - `reservationId` (예약 ID)  
-- **정책**  
-  - 존재하지 않는 예약일 경우 실패 응답  
-- **성공 응답 정보**  
-  - `message`  
+### API 명세서
 
 ---
 
-##  매장 관리자
+## 매장 이용자 (고객)
 
-### 1️⃣ 회원가입 (POST `/signup/partnerRegister`)
-- **파라미터**  
-  - `email`, `password`, `name`, `phone`  
-- **정책**  
-  - 이메일이 이미 존재하는 경우 실패 응답  
-- **성공 응답 정보**  
-  - `email`, `name`, `phone`, `createdAt`  
+1. 회원가입 (POST `/signup/register`)
+   - **파라미터**  
+     - email (이메일)  
+     - password (비밀번호)  
+     - name (이름)  
+     - phone (전화번호)  
+   - **정책**  
+     - 이메일이 이미 존재하는 경우 실패 응답  
+   - **성공 응답 정보**  
+     - email, name, phone, createdAt  
+
+2. 로그인 (POST `/login`)
+   - **파라미터**  
+     - email (이메일)  
+     - password (비밀번호)  
+   - **정책**  
+     - 이메일이 존재하지 않거나 비밀번호가 틀린 경우 실패 응답  
+   - **성공 응답 정보**  
+     - token, userId  
+
+3. 예약 생성 (POST `/reservation/create`)
+   - **파라미터**  
+     - phoneNumber (전화번호)  
+     - storeId (매장 ID)  
+     - reservationTime (예약 시간)  
+   - **정책**  
+     - 존재하지 않는 사용자 또는 매장일 경우 실패 응답  
+     - 과거 시간 예약 불가  
+     - 동일한 시간에 중복 예약 불가  
+   - **성공 응답 정보**  
+     - reservationId, customerId, storeId, reservationTime, createdAt  
+
+4. 고객의 예약 목록 조회 (GET `/reservation/list/{customerId}`)
+   - **파라미터**  
+     - customerId (고객 ID)  
+   - **정책**  
+     - 존재하지 않는 사용자일 경우 실패 응답  
+   - **성공 응답 정보**  
+     - reservationId, storeId, reservationTime, status  
+
+5. 예약 취소 (DELETE `/reservation/cancel/{reservationId}`)
+   - **파라미터**  
+     - reservationId (예약 ID)  
+   - **정책**  
+     - 존재하지 않는 예약일 경우 실패 응답  
+   - **성공 응답 정보**  
+     - message  
 
 ---
 
-##  매장
+## 매장 관리자
 
-### 1️⃣ 매장 등록 (POST `/store/register`)
-- **파라미터**  
-  - `managerName`, `restaurantName`, `restaurantAddress`, `restaurantDetail`, `lat`, `lnt`  
-- **정책**  
-  - 동일한 `restaurantName`이 이미 존재하는 경우 실패 응답  
-- **성공 응답 정보**  
-  - `storeId`, `managerName`, `restaurantName`, `restaurantAddress`, `restaurantDetail`, `lat`, `lnt`, `createdAt`  
-
-### 2️⃣ 매장 수정 (PUT `/store/update/{storeId}`)
-- **파라미터**  
-  - `managerName`, `restaurantName`, `restaurantAddress`, `restaurantDetail`, `lat`, `lnt`  
-- **정책**  
-  - 동일한 `restaurantName`이 이미 존재하는 경우 실패 응답  
-- **성공 응답 정보**  
-  - `storeId`, `managerName`, `restaurantName`, `restaurantAddress`, `restaurantDetail`, `lat`, `lnt`, `modifiedAt`  
-
-### 3️⃣ 매장 삭제 (DELETE `/store/delete/{storeId}`)
-- **파라미터**  
-  - `storeId` (매장 ID)  
-- **정책**  
-  - 존재하지 않는 매장일 경우 실패 응답  
-- **성공 응답 정보**  
-  - `message`  
-
-### 4️⃣ 매장 검색 (GET `/store/search`)
-- **파라미터**  
-  - `query` (검색 키워드)  
-- **성공 응답 정보**  
-  - `storeId`, `restaurantName`, `restaurantAddress`, `rating`  
+1. 회원가입 (POST `/signup/partnerRegister`)
+   - **파라미터**  
+     - email, password, name, phone  
+   - **정책**  
+     - 이메일이 이미 존재하는 경우 실패 응답  
+   - **성공 응답 정보**  
+     - email, name, phone, createdAt  
 
 ---
 
-##  방문 확인 (키오스크)
+## 매장
 
-### 1️⃣ 방문 확인 (PUT `/kiosk/confirm/{reservationId}`)
-- **파라미터**  
-  - `reservationId` (예약 ID)  
-- **정책**  
-  - 존재하지 않는 예약일 경우 실패 응답  
-  - 이미 방문 확인이 된 경우 실패 응답  
-- **성공 응답 정보**  
-  - `reservationId`, `status`, `visitedAt`  
+1. 매장 등록 (POST `/store/register`)
+   - **파라미터**  
+     - managerName, restaurantName, restaurantAddress, restaurantDetail, lat, lnt  
+   - **정책**  
+     - 동일한 restaurantName이 이미 존재하는 경우 실패 응답  
+   - **성공 응답 정보**  
+     - storeId, managerName, restaurantName, restaurantAddress, restaurantDetail, lat, lnt, createdAt  
+
+2. 매장 수정 (PUT `/store/update/{storeId}`)
+   - **파라미터**  
+     - managerName, restaurantName, restaurantAddress, restaurantDetail, lat, lnt  
+   - **정책**  
+     - 동일한 restaurantName이 이미 존재하는 경우 실패 응답  
+   - **성공 응답 정보**  
+     - storeId, managerName, restaurantName, restaurantAddress, restaurantDetail, lat, lnt, modifiedAt  
+
+3. 매장 삭제 (DELETE `/store/delete/{storeId}`)
+   - **파라미터**  
+     - storeId (매장 ID)  
+   - **정책**  
+     - 존재하지 않는 매장일 경우 실패 응답  
+   - **성공 응답 정보**  
+     - message  
+
+4. 매장 검색 (GET `/store/search`)
+   - **파라미터**  
+     - query (검색 키워드)  
+   - **성공 응답 정보**  
+     - storeId, restaurantName, restaurantAddress, rating  
+
+5. 매장 정렬 (GET `/store/sort`)
+   - **파라미터**  
+     - type (name: 가나다순, rating: 별점순, distance: 거리순)  
+   - **성공 응답 정보**  
+     - storeId, restaurantName, restaurantAddress, rating, distance  
+
+---
+
+## 방문 확인 (키오스크)
+
+1. 방문 확인 (PUT `/kiosk/confirm/{reservationId}`)
+   - **파라미터**  
+     - reservationId (예약 ID)  
+   - **정책**  
+     - 존재하지 않는 예약일 경우 실패 응답  
+     - 이미 방문 확인이 된 경우 실패 응답  
+   - **성공 응답 정보**  
+     - reservationId, status, visitedAt  
+
+---
+
+## 예약 승인/거절 (매장 관리자)
+
+1. 예약 승인 (PUT `/reservation/approve/{reservationId}`)
+   - **파라미터**  
+     - reservationId (예약 ID)  
+   - **정책**  
+     - 존재하지 않는 예약일 경우 실패 응답  
+     - 승인할 수 없는 상태일 경우 실패 응답  
+   - **성공 응답 정보**  
+     - reservationId, status  
+
+2. 예약 거절 (PUT `/reservation/reject/{reservationId}`)
+   - **파라미터**  
+     - reservationId (예약 ID)  
+   - **정책**  
+     - 존재하지 않는 예약일 경우 실패 응답  
+     - 거절할 수 없는 상태일 경우 실패 응답  
+   - **성공 응답 정보**  
+     - reservationId, status  
+
+---
+
+## 리뷰 기능
+
+1. 리뷰 작성 (POST `/review/create`)
+   - **파라미터**  
+     - storeId (매장 ID)  
+     - customerId (고객 ID)  
+     - rating (평점, 1~5)  
+     - reviewText (리뷰 내용)  
+   - **정책**  
+     - 방문 기록이 없는 경우 리뷰 작성 불가  
+   - **성공 응답 정보**  
+     - reviewId, storeId, customerId, rating, reviewText, createdAt  
+
+2. 리뷰 수정 (PUT `/review/update/{reviewId}`)
+   - **파라미터**  
+     - reviewId (리뷰 ID)  
+     - rating (평점)  
+     - reviewText (리뷰 내용)  
+   - **정책**  
+     - 작성자만 리뷰 수정 가능  
+   - **성공 응답 정보**  
+     - reviewId, rating, reviewText  
+
+3. 리뷰 삭제 (DELETE `/review/delete/{reviewId}`)
+   - **파라미터**  
+     - reviewId (리뷰 ID)  
+   - **정책**  
+     - 작성자 또는 매장 관리자만 삭제 가능  
+   - **성공 응답 정보**  
+     - message  
+
+4. 매장별 리뷰 조회 (GET `/review/store/{storeId}`)
+   - **파라미터**  
+     - storeId (매장 ID)  
+   - **성공 응답 정보**  
+     - reviewId, customerId, rating, reviewText, createdAt  
 
 
  
